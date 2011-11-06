@@ -1,0 +1,3 @@
+Building:
+	cd src
+	make
