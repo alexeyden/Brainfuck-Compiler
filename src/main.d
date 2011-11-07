@@ -44,11 +44,32 @@ int main(string[] args)
 		}
 		
 		if(!CompilerIntelELF32.Compile(args[2],args[3]))
+		{
+			writeln("FAIL!");
 			return 1;
+		}
+		else
+			writeln("SUCCESS!");
 	}
 	else if(args[1] == "-i")
 	{
-		writeln("Not supported");
+		if(args.length < 3)
+		{
+			writeln("No source file set");
+			write(usage);
+			return 1;
+		}
+		
+		Interpreter bf_interp = new Interpreter();
+		if(!bf_interp.LoadFile(args[2]))
+		{
+			writeln("FAIL!");
+			return 1;
+		}
+		else
+		{
+			bf_interp.Run();
+		}
 	}
 	else
 	{

@@ -16,6 +16,7 @@ class CompilerIntelELF32
 			Parser bf_parser = new Parser();
 			if(!bf_parser.SetSourceFromFile(in_file))
 			{
+				writeln("INPUT FILE ERROR!");
 				writeln("Can not read souce file: ",in_file);
 				return false;
 			}
@@ -26,7 +27,7 @@ class CompilerIntelELF32
 			
 			if(err != Parser.ParseError.None)
 			{
-				writeln("PARSER ERROR");
+				writeln("PARSER ERROR!");
 				
 				if(err == Parser.ParseError.UnmatchedLeftBrace)
 					writeln("Unmatched [ at ",err_pos);
@@ -46,7 +47,7 @@ class CompilerIntelELF32
 			CodeGenerator.Relocation[] reloc;
 			if(!bf_codegen.Generate(x86code,reloc))
 			{
-				writeln("CODE GENERATOR ERROR");
+				writeln("CODE GENERATOR ERROR!");
 				
 				return false;
 			}
@@ -55,11 +56,10 @@ class CompilerIntelELF32
 			FileELF32Obj bf_file = new FileELF32Obj(x86code,reloc,in_file);
 			if(!bf_file.Write(out_file))
 			{
+				writeln("OUTPUT FILE ERROR!");
 				writeln("Can not save to file: ",out_file);
 				return false;
 			}
-			
-			writeln("SUCCESS!");
 			
 			return true;
 		}

@@ -2,14 +2,42 @@ module Brainfuck.Interpreter;
 import Brainfuck.Parser;
 import std.stdio;
 
-/* TODO: compiler like class interface */
 class Interpreter
 {
 public:
 	this(){}
-	this(Parser.Command[] code) { SetCode(code); }
+	this(string filename) { LoadFile(filename); }
 	
-	void SetCode(Parser.Command[] code) { this.code = code; }
+	bool LoadFile(string filename)
+	{
+		Parser bf_parser = new Parser();
+		if(!bf_parser.SetSourceFromFile(filename))
+		{
+			writeln("INPUT FILE ERROR!");
+			writeln("Can not read souce file: ",filename);
+			return false;
+		}
+		
+		Parser.ParseError err;
+		uint err_pos;
+		err = bf_parser.Validate(err_pos);
+			
+		if(err != Parser.ParseError.None)
+		{
+			writeln("PARSER ERROR!");
+			
+			if(err == Parser.ParseError.UnmatchedLeftBrace)
+				writeln("Unmatched [ at ",err_pos);
+			else if(err == Parser.ParseError.UnmatchedRightBrace)
+				writeln("Unmatched ] at ",err_pos);
+			
+			return false;
+		}
+		
+		this.code = bf_parser.Parse();
+		return true;
+	}
+	
 	Parser.Command[] GetCode() { return code; }
 	
 	void SetData(ubyte[30000] data) { data = this.data; }
@@ -20,7 +48,7 @@ public:
 	
 	bool Step()
 	{
-		if(code_ptr >= code.length)
+		if((code_ptr >= code.length) || !code)
 			return false;
 		
 		switch(code[code_ptr].type)
@@ -112,6 +140,9 @@ public:
 	
 	bool Run()
 	{
+		if(!code)
+			return false;
+		
 		while(Step()){}
 		
 		return true;
