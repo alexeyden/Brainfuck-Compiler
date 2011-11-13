@@ -38,6 +38,7 @@ public:
 		return true;
 	}
 	
+	void SetCode(Parser.Command[] code) { this.code = code; }
 	Parser.Command[] GetCode() { return code; }
 	
 	void SetData(ubyte[30000] data) { data = this.data; }
@@ -45,6 +46,9 @@ public:
 	
 	uint GetIndex() { return this.code_ptr; }
 	void  SetIndex(uint  new_index) { this.code_ptr = new_index; }
+
+	uint GetDataPtr() { return this.data_ptr; }
+	void SetDataPtr(uint new_datap) { this.data_ptr = new_datap; }
 	
 	bool Step()
 	{
