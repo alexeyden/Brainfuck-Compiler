@@ -63,7 +63,7 @@ int main(string[] args)
 			writeln("Avaliable commands:");
 			writeln("\t!dp                  display data pointer");
 			writeln("\t!dp <value>          set data pointer");
-			writeln("\t!ds <begin> <end>    get data slice");
+			writeln("\t!ds <begin> <end>    print data values");
 
 			write("# ");
 			
@@ -73,14 +73,49 @@ int main(string[] args)
 			char[] input_buf;
 			while(readln(input_buf))
 			{
-				if((input_buf[0]=='!') && (input_buf[0..4] == "!ds "))
+				if((input_buf[0]=='!') && ((input_buf == "!ds\n") || (input_buf[0..4] == "!ds ")))
 				{
-					char params[][] = split(input_buf[4..input_buf.length-1]);
-					int begin = to!(uint)(params[0]);
-					int end = to!(uint)(params[1]);
-					foreach(ubyte b;bf_interp.GetData()[begin..end+1])
-						write(b," ");
-					writeln();
+					int begin,end;
+					char params[][];
+
+					if(input_buf.length > "!ds\n".length)
+						params = split(input_buf[4..input_buf.length-1]);
+
+					if(params.length > 0)
+					{
+						try
+						{
+							begin = to!(uint)(params[0]);
+
+							if(params.length > 1)
+							{
+								end = to!(uint)(params[1]);
+
+								if(end < begin)
+									throw new ConvException("begin > end");
+							}
+							else
+								end = begin;
+						}
+						catch(ConvException conv_err)
+						{
+							writeln("Wrong arguments");
+							begin = end = -1;
+						}
+					}
+					else
+					{
+						begin = end = bf_interp.GetDataPtr();
+					}
+
+
+					if(begin >= 0)
+					{
+						if(end < 0) end = begin; 
+						foreach(ubyte b;bf_interp.GetData()[begin..end+1])
+							write(b," ");
+						writeln();
+					}
 				}
 				else if((input_buf[0]=='!') && (input_buf[0..3] == "!dp") && input_buf.length==4)
 				{
